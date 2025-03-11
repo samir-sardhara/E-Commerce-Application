@@ -6,6 +6,9 @@ import com.example.ProductService.models.Product;
 
 import com.example.ProductService.repository.CategoryRepository;
 import com.example.ProductService.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +41,19 @@ public class SelfProductService implements ProductService{
     public List<Product> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return products;
+    }
+
+    @Override
+    public Page<Product> getPaginatedProducts(int pageNo, int pageSize) { //controller class will give pageNo and pageSize
+        //Pageable was an interface
+        //PageRequest class
+        //Can I pass an object of PageRequest class in the place of pageable param inside findAll
+        //Animal <--- Dog (Animal animal = new Dog())
+        //Pageable <--- PageRequest
+        return productRepository.findAll(PageRequest.of(
+                pageNo,
+                pageSize,
+                Sort.by("title").descending().and(Sort.by("price").ascending())));
     }
 
     @Override

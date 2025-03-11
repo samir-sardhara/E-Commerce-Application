@@ -4,6 +4,7 @@ import com.example.ProductService.dtos.CreateProductDto;
 import com.example.ProductService.expections.ProductNotFoundExceptions;
 import com.example.ProductService.models.Product;
 import com.example.ProductService.services.ProductService;
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,12 @@ public class ProductController {
 
     @GetMapping("/product")
     List<Product> getAllProducts(){
-        return null;
+        return productService.getAllProducts();
+    }
+
+    @GetMapping("/products/paginated")
+    Page<Product> getPaginatedProducts(@RequestParam("pageNo") int pageNo,@RequestParam("pagesize") int pagesize){
+        return productService.getPaginatedProducts(pageNo,pagesize);
     }
 
     @PostMapping("/products")

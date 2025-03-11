@@ -2,6 +2,8 @@ package com.example.ProductService.repository;
 
 import com.example.ProductService.models.Product;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +14,9 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product,Long> {
     @Override
     List<Product> findAll();
+
+    @Override
+    Page<Product> findAll(Pageable pageable);
 
     @Override
     Optional<Product> findById(Long id);
