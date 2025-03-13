@@ -3,6 +3,7 @@ package com.example.ProductService.services;
 import com.example.ProductService.dtos.FakeStoreProductDto;
 import com.example.ProductService.models.Product;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,13 +16,26 @@ import java.util.List;
 public class FakeStoreProductService implements ProductService{
 
     private RestTemplate restTemplate;
-    public FakeStoreProductService(RestTemplate restTemplate){
+    private RedisTemplate redisTemplate;
+
+    public FakeStoreProductService(RestTemplate restTemplate,RedisTemplate redisTemplate){
         this.restTemplate = restTemplate;
+        this.redisTemplate = redisTemplate;
     }
     @Override
     public Product getSingleProduct(long id) {
+
+        Product cachedProduct = (Product) redisTemplate.opsForHash().get("Products","Products_"+ id);
+        if(cachedProduct != null){
+            return cachedProduct;
+        }
+
         ResponseEntity<FakeStoreProductDto> fakeStoreProductDtoResponseEntity = restTemplate.getForEntity("https://fakestoreapi.com/products/" + id, FakeStoreProductDto.class);
-        return  fakeStoreProductDtoResponseEntity.getBody().toProduct();
+
+        Product response =  fakeStoreProductDtoResponseEntity.getBody().toProduct();
+
+        redisTemplate.opsForHash().put("Products","Products_" + id,response);
+        return response;
 
     }
 
